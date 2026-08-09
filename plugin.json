@@ -3,7 +3,7 @@
   "name": "NVIDIA GPU Monitor",
   "description": "Monitor NVIDIA GPU usage, VRAM, temperature, power consumption and process usage.",
   "category": "monitoring",
-  "version": "5.0.0",
+  "version": "5.1.0",
   "author": "Revers.",
   "type": "widget",
   "capabilities": [
