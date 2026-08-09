@@ -6,16 +6,15 @@ import qs.Widgets
 
 PluginSettings {
     id: root
-    pluginId: "amdGpuMonitor"
+    pluginId: "nvidiaGpuMonitor"
 
-    // [{ name, pci, type, suspended }] as reported by amdgpu_top
+    // [{ name, pci, type, suspended }] as reported by nvidia-smi
     property var detectedGpus: []
     property string detectError: ""
     property bool detecting: true
 
     function variantDescription(gpu) {
-        const kind = gpu.type === "APU" ? "Integrated" : gpu.type === "dGPU" ? "Discrete" : "";
-        return kind ? `Monitor your ${kind.toLowerCase()} ${gpu.name}` : `Monitor your ${gpu.name}`;
+        return `Monitor your ${gpu.name}`;
     }
 
     // Pre-PCI variants only carry gpuIndex. Adopt them by position so the sync
@@ -29,7 +28,7 @@ PluginSettings {
 
         const claimed = (variants || []).map(v => v.gpuPci).filter(pci => pci);
         for (const variant of legacy) {
-            const gpu = AmdGpuService.deviceByIndex(variant.gpuIndex);
+            const gpu = NvidiaGpuService.deviceByIndex(variant.gpuIndex);
             if (!gpu || !gpu.pci || claimed.indexOf(gpu.pci) !== -1)
                 continue;
             claimed.push(gpu.pci);
@@ -44,15 +43,12 @@ PluginSettings {
         return adopted;
     }
 
-    // Matched by PCI so a GPU that suspends and returns keeps its existing widget.
+    // Matched by PCI so a GPU keeps its existing widget across driver reloads.
     function syncVariantsToGpus() {
         const adopted = migrateLegacyVariants();
 
         for (const gpu of detectedGpus) {
             const existing = (variants || []).find(v => v.gpuPci === gpu.pci);
-            // Never clear a remembered type with the empty one a suspended
-            // device reports.
-            const gpuType = gpu.type || existing?.gpuType || "";
             // Custom = the user changed the name away from the detected one
             // (stored in originalName). Reset restores from originalName.
             const custom = !!(existing?.name && existing.originalName && existing.name !== existing.originalName);
@@ -61,16 +57,16 @@ PluginSettings {
             const icon = existing?.icon ? existing.icon : "memory";
             const config = {
                 gpuPci: gpu.pci,
-                gpuType: gpuType,
+                gpuType: gpu.type || "",
                 originalName: gpu.name,
-                description: variantDescription({ name: name, type: gpuType }),
+                description: variantDescription({ name: name, type: gpu.type || "" }),
                 icon: icon
             };
             if (!existing) {
                 createVariant(gpu.name, config);
             } else if (existing.name !== name
                        || existing.description !== config.description
-                       || existing.gpuType !== gpuType
+                       || existing.gpuType !== config.gpuType
                        || existing.icon !== config.icon
                        || existing.originalName !== config.originalName) {
                 updateVariant(existing.id, Object.assign({ name: name }, config));
@@ -81,25 +77,25 @@ PluginSettings {
     onDetectedGpusChanged: syncVariantsToGpus()
 
     function refreshDetectedGpus() {
-        const all = AmdGpuService.devices.slice();
+        const all = NvidiaGpuService.devices.slice();
         all.sort((a, b) => a.pci.localeCompare(b.pci));
         root.detectedGpus = all;
         root.detecting = false;
-        root.detectError = AmdGpuService.statsError && !all.length
-            ? "Could not run amdgpu_top. Is it installed?"
-            : all.length ? "" : "No AMD GPUs detected.";
+        root.detectError = NvidiaGpuService.statsError && !all.length
+            ? "Could not run nvidia-smi. Is it installed?"
+            : all.length ? "" : "No NVIDIA GPUs detected.";
     }
 
     // Detection has to work with no widget in the bar, so subscribe while open.
     Component.onCompleted: {
-        AmdGpuService.request(root, 2000);
-        if (AmdGpuService.devices.length)
+        NvidiaGpuService.request(root, 2000);
+        if (NvidiaGpuService.devices.length)
             refreshDetectedGpus();
     }
-    Component.onDestruction: AmdGpuService.release(root)
+    Component.onDestruction: NvidiaGpuService.release(root)
 
     Connections {
-        target: AmdGpuService
+        target: NvidiaGpuService
         function onDevicesChanged() {
             root.refreshDetectedGpus();
         }
@@ -110,7 +106,7 @@ PluginSettings {
 
     StyledText {
         width: parent.width
-        text: "AMD GPU Monitor"
+        text: "NVIDIA GPU Monitor"
         font.pixelSize: Theme.fontSizeLarge
         font.weight: Font.Bold
         color: Theme.surfaceText
@@ -118,7 +114,7 @@ PluginSettings {
 
     StyledText {
         width: parent.width
-        text: "Monitor AMD GPU usage, VRAM, temperature and power consumption."
+        text: "Monitor NVIDIA GPU usage, VRAM, temperature and power consumption."
         font.pixelSize: Theme.fontSizeSmall
         color: Theme.surfaceVariantText
         wrapMode: Text.WordWrap
@@ -146,7 +142,7 @@ PluginSettings {
     SelectionSetting {
         settingKey: "updateInterval"
         label: "Update Interval"
-        description: "How often amdgpu_top is polled. Lower values are more responsive but use more CPU."
+        description: "How often nvidia-smi is polled. Lower values are more responsive but use more CPU."
         options: [
             { label: "1s", value: "1000" },
             { label: "2s", value: "2000" },
@@ -369,7 +365,7 @@ PluginSettings {
 
                     function commitEdit() {
                         const variant = variantEntry.modelData;
-                        const newName = nameEditField.text.trim() || variant.name || "AMD GPU";
+                        const newName = nameEditField.text.trim() || variant.name || "NVIDIA GPU";
                         // Text field wins if non-empty; otherwise the dropdown.
                         const newIcon = variantEntry.pendingIcon || variantEntry.pickerIcon || "memory";
                         root.updateVariant(variant.id, { name: newName, icon: newIcon });
@@ -379,7 +375,7 @@ PluginSettings {
 
                     function resetEdit() {
                         const variant = variantEntry.modelData;
-                        const originalName = variant.originalName || "AMD GPU";
+                        const originalName = variant.originalName || "NVIDIA GPU";
                         root.updateVariant(variant.id, { name: originalName, icon: "memory" });
                         ToastService.showInfo(`Reset widget: ${originalName}`);
                     }

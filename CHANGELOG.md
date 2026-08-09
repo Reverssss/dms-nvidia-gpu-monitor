@@ -2,38 +2,46 @@
 
 All notable changes to this project are documented in this file.
 
-## [4.2.0]
+## [5.1.0]
 
 ### Added
 
+- **Shared GPU stats service** (`NvidiaGpuService.qml`): a singleton that polls `nvidia-smi` once per update cycle and feeds every widget and the settings UI.
+- GPU detection in the settings UI now works even when no NVIDIA GPU Monitor widget has been added to the bar.
 - **Process List Sort** setting in the plugin settings UI. Choose between VRAM Usage, GPU Usage (GFX), CPU Usage, Process Name, or PID.
 - Column headers (Process / VRAM / GFX / CPU) above the process list in the `Default` and `Alternative` popout styles.
 - Hover tooltip on process names that shows the full name when the text is elided.
 
-### Fixed
-
-- Long process names no longer overflow and slide under the VRAM badge in the `Default` popout style.
-
-## [4.1.0]
-
-### Added
-
-- **Shared GPU stats service** (`AmdGpuService.qml`): a singleton that polls `amdgpu_top` once per update cycle and feeds every widget and the settings UI.
-- GPU detection in the settings UI now works even when no AMD GPU Monitor widget has been added to the bar.
-
 ### Changed
 
-- Widgets subscribe to `AmdGpuService` instead of running their own `amdgpu_top` process.
+- Widgets subscribe to `NvidiaGpuService` instead of running their own `nvidia-smi` process.
 - The fastest update interval requested by any active widget drives the shared poll timer, so a widget set to 1s still updates every second.
 - `statsError` is now a shared state surfaced by the service; all widgets reflect the same error condition.
 
 ### Performance
 
-- Reduced `amdgpu_top` invocations from one per widget per screen to one per tick. On multi-monitor setups with multiple GPU widgets this cuts CPU and IO overhead significantly.
+- Reduced `nvidia-smi` invocations from one per widget per screen to one per tick. On multi-monitor setups with multiple GPU widgets this cuts CPU and IO overhead significantly.
 
 ### Fixed
 
-- Eliminated per-widget `Process` instances that could become stale on GPU suspend/reset.
+- Long process names no longer overflow and slide under the VRAM badge in the `Default` popout style.
+
+## [5.0.0]
+
+### Added
+- **NVIDIA support**: the plugin is now an NVIDIA GPU Monitor powered by `nvidia-smi` instead of `amdgpu_top`.
+- New plugin identity: id `nvidiaGpuMonitor`, files `NvidiaGpuMonitorWidget.qml` / `NvidiaGpuMonitorSettings.qml`.
+
+### Changed
+- GPU-wide stats now come from `nvidia-smi --query-gpu=... --format=csv,noheader,nounits` (name, index, PCI bus id, utilization.gpu, utilization.memory, utilization.encoder, utilization.decoder, memory.used, memory.total, temperature.gpu, power.draw).
+- Per-process stats are parsed from `nvidia-smi -q -x`: the XML `<processes>` sections list every process using the GPU — graphics and compute alike — with process name, PID, and VRAM. (`--query-compute-apps` alone would only show CUDA processes.) `nvidia-smi` does not expose per-process GPU utilization, so the GFX/CPU per-process badges show `-`.
+- Engine activity mapping: GFX = `utilization.gpu`, MEM = `utilization.memory`, Media = max of encoder/decoder utilization.
+- GPU auto-detection in settings uses `nvidia-smi --query-gpu=name,index,pci.bus_id`; bus ids are normalized from `00000000:01:00.0` to `0000:01:00.0`.
+- `[N/A]` values from `nvidia-smi` (e.g. power draw on some GPUs) parse to 0 and are treated as unsupported.
+- README and docs rewritten for the NVIDIA/nvidia-smi workflow.
+
+### Removed
+- `amdgpu_top` dependency, JSON parsing, fdinfo per-process metrics, the sysfs `hwmon` temperature fallback, and the runtime-suspend (suspended GPU) handling.
 
 ## [4.0.0]
 

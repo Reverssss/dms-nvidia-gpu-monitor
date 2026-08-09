@@ -5,7 +5,7 @@ title: Configuration
 
 # Configuration
 
-All settings are available in the DankMaterialShell settings UI under the AMD GPU Monitor plugin. No manual file editing is required for standard configuration.
+All settings are available in the DankMaterialShell settings UI under the NVIDIA GPU Monitor plugin. No manual file editing is required for standard configuration.
 
 ## Settings UI Options
 
@@ -57,9 +57,9 @@ Controls how the GPU process list is ordered in the popout panel. The list re-so
 
 Below the settings above, the plugin settings UI has a **Your GPUs** / **Configured Widgets** section for multi-GPU systems.
 
-GPUs are discovered automatically using `amdgpu_top -J -n 1` and matched by PCI address, so you do not need to type a GPU index. Each detected GPU gets its own widget variant automatically:
+GPUs are discovered automatically using `nvidia-smi --query-gpu=name,index,pci.bus_id` and matched by PCI address, so you do not need to type a GPU index. Each detected GPU gets its own widget variant automatically:
 
-1. Open the AMD GPU Monitor plugin settings.
+1. Open the NVIDIA GPU Monitor plugin settings.
 2. Under **Configured Widgets**, each detected GPU already has a variant.
 3. Go to **Add Widget** in the bar configuration and add the variant you want — it behaves as an independent widget instance targeting that GPU.
 
@@ -73,7 +73,7 @@ Click the reset icon to restore the widget's original detected name and default 
 
 #### Legacy variants
 
-Variants created before v4.0.0 stored only a `gpuIndex`. These are automatically adopted by PCI address the first time the matching GPU is detected. Legacy entries are labeled with `(legacy)` tag and can be safely removed.
+Variants stored only a `gpuIndex` in older versions. These are automatically adopted by PCI address the first time the matching GPU is detected. Legacy entries are labeled with `(legacy)` tag and can be safely removed.
 
 ### Update Interval (`updateInterval`)
 
@@ -83,9 +83,9 @@ Variants created before v4.0.0 stored only a `gpuIndex`. These are automatically
 | **Default** | `4000` ms |
 | **Options** | 1s, 2s, 4s, 8s, 15s |
 
-Controls how often `amdgpu_top` is polled. Lower values are more responsive but use more CPU; higher values reduce polling overhead.
+Controls how often `nvidia-smi` is polled. Lower values are more responsive but use more CPU; higher values reduce polling overhead.
 
-All widgets share a single poll timer via `AmdGpuService`, and the fastest interval requested by any active widget drives that timer. For example, if one widget is set to 1s and another to 4s, both update every 1s.
+All widgets share a single poll timer via `NvidiaGpuService`, and the fastest interval requested by any active widget drives that timer. For example, if one widget is set to 1s and another to 4s, both update every 1s.
 
 ---
 
@@ -118,4 +118,4 @@ All three popout styles (`Default`, `Alternative`, `Legacy`) read these same thr
 
 ## Error Indication
 
-If the bar widget's icon tints red, `amdgpu_top` failed on the last poll (non-zero exit, stderr output, or invalid JSON). See [Troubleshooting: Widget icon turns red](troubleshooting#widget-icon-turns-red--stats-stop-updating) for diagnosis steps. The widget keeps its last-known values during a transient failure.
+If the bar widget's icon tints red, `nvidia-smi` failed on the last poll (non-zero exit or stderr output). See [Troubleshooting: Widget icon turns red](troubleshooting#widget-icon-turns-red--stats-stop-updating) for diagnosis steps. The widget keeps its last-known values during a transient failure.

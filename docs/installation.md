@@ -7,44 +7,53 @@ title: Installation Guide
 
 ## Requirements
 
-- AMD GPU with AMDGPU driver support
-- `amdgpu_top` utility installed and accessible in PATH
+- NVIDIA GPU with the proprietary NVIDIA driver
+- `nvidia-smi` utility installed and accessible in PATH
 - QuickShell
 - DankMaterialShell framework
-- Linux kernel 5.14+ (required for per-process fdinfo GPU stats)
 
-## Installing amdgpu_top
+## Installing nvidia-smi
 
-### Arch Linux / AUR
+`nvidia-smi` is bundled with the NVIDIA driver package. Install the driver for your distribution:
 
+### Arch Linux
 ```bash
-yay -S amdgpu_top
+yay -S nvidia
 ```
 
-### Build from Source
+### Debian / Ubuntu
 ```bash
-git clone https://github.com/Umio-Yasuno/amdgpu_top.git
-cd amdgpu_top
-cargo build --release
-sudo cp target/release/amdgpu_top /usr/local/bin/
+sudo apt install nvidia-driver
 ```
+
+### Fedora
+```bash
+sudo dnf install akmod-nvidia
+```
+
+Verify the installation:
+
+```bash
+nvidia-smi
+```
+
+This should print a table with your GPU(s), driver version, and memory stats.
 
 ## Installing the Plugin
 
 1. Copy the plugin folder to your DankMaterialShell plugins directory:
    ```bash
-   cp -r AmdGpuMonitor ~/.config/DankMaterialShell/plugins/
+   cp -r NvidiaGpuMonitor ~/.config/DankMaterialShell/plugins/
    ```
 
 2. The plugin is automatically detected by DankMaterialShell on next startup.
 
 ## Permissions
 
-Some systems may require additional permissions to access GPU metrics:
+`nvidia-smi` normally runs without extra permissions. If process queries come back empty or the plugin reports errors, check that your user is in the `video` group:
 
 ```bash
 # Add user to video group
 sudo usermod -a -G video $USER
 # Log out and back in for changes to take effect
 ```
-

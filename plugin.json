@@ -1,20 +1,20 @@
 {
-  "id": "amdGpuMonitor",
-  "name": "AMD GPU Monitor",
-  "description": "Monitor AMD GPU usage, VRAM, temperature, power consumption and process usage.",
+  "id": "nvidiaGpuMonitor",
+  "name": "NVIDIA GPU Monitor",
+  "description": "Monitor NVIDIA GPU usage, VRAM, temperature, power consumption and process usage.",
   "category": "monitoring",
-  "version": "4.2.0",
-  "author": "Navid A.",
+  "version": "5.0.0",
+  "author": "Revers.",
   "type": "widget",
   "capabilities": [
     "dankbar-widget",
     "monitoring"
   ],
-  "component": "./AmdGpuMonitorWidget.qml",
-  "settings": "./AmdGpuMonitorSettings.qml",
+  "component": "./NvidiaGpuMonitorWidget.qml",
+  "settings": "./NvidiaGpuMonitorSettings.qml",
   "icon": "memory",
   "requires": [
-    "amdgpu_top"
+    "nvidia-smi"
   ],
   "permissions": [
     "settings_read",

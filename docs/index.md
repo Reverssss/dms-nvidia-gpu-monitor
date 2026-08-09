@@ -3,39 +3,36 @@ layout: default
 title: Documentation
 ---
 
-# AMD GPU Monitor Documentation
+# NVIDIA GPU Monitor Documentation
 
-Welcome to the AMD GPU Monitor documentation. This plugin (v4.2.0) provides real-time monitoring of AMD GPU statistics for DankMaterialShell.
+Welcome to the NVIDIA GPU Monitor documentation. This plugin (v5.0.0) provides real-time monitoring of NVIDIA GPU statistics for DankMaterialShell.
 
 ## Quick Navigation
 
 ### Getting Started
-
 - [**Installation Guide**](installation) - Set up the plugin and dependencies
 - [**Configuration**](configuration) - Customize behavior and appearance
 
 ### Help & Reference
-
 - [**Troubleshooting**](troubleshooting) - Common issues and solutions
 - [**Technical Details**](technical-details) - How it works and data fields
 
 ## Overview
 
-AMD GPU Monitor tracks:
-
-- GPU usage — overall % is the max of GFX, Memory, and Media Engine activity
+NVIDIA GPU Monitor tracks:
+- GPU usage — `utilization.gpu`, `utilization.memory`, and encoder/decoder activity via `nvidia-smi`
 - VRAM statistics with auto-scaling display (MiB or GiB)
-- Temperature (edge sensor, °C) and average power consumption (W)
-- Per-process GPU metrics, filtered to processes actively using the GPU
+- Temperature (°C) and power consumption (W)
+- Per-process GPU metrics (process name, PID, VRAM) — all processes using the GPU, graphics and compute alike, parsed from `nvidia-smi -q -x`
 
 ## Screenshots
 
-![AMD GPU Monitor](images/screenshot.png)
+![NVIDIA GPU Monitor](images/screenshot.png)
 
 ## Quick Links
 
-- [GitHub Repository](https://github.com/navidagz/dms-amd-gpu-monitor)
-- [Report an Issue](https://github.com/navidagz/dms-amd-gpu-monitor/issues)
+- [GitHub Repository](https://github.com/Reverssss/dms-nvidia-gpu-monitor)
+- [Report an Issue](https://github.com/Reverssss/dms-nvidia-gpu-monitor/issues)
 - [DankMaterialShell](https://github.com/DankMaterialShell)
 
 ## Features at a Glance
@@ -48,10 +45,7 @@ AMD GPU Monitor tracks:
 - Smooth animations
 - Three popout visual styles (Default, Alternative, Legacy)
 - Configurable update interval (1s–15s)
-- Configurable process list sort order (VRAM, GFX, CPU, Name, PID)
 - Multi-GPU widget variants with automatic PCI-based detection
 - Inline editing of widget display names and icons
 - Loading indicator while GPUs are detected
-- Process list column headers and hover tooltips for long names
 - Settings UI — no manual file editing required
-- Shared GPU stats service polls `amdgpu_top` once per tick for all widgets and screens

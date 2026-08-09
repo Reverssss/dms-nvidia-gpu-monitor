@@ -1,23 +1,15 @@
-# AMD GPU Monitor
+# NVIDIA GPU Monitor
 
-<br>
-<div align="center">
-  <a href="https://github.com/AvengeMedia/dms-plugin-registry/issues/490">
-    <img src="https://img.shields.io/badge/UPVOTE_THIS-👍-informational?style=for-the-badge" alt="Upvote this plugin" width="200"/>
-  </a>
-</div>
-<br>
+Real-time NVIDIA GPU monitoring plugin for DankMaterialShell. Tracks GPU usage, VRAM, temperature, power, and per-process activity for NVIDIA GPUs, with support for multiple GPU-specific widget variants.
 
-Real-time AMD GPU monitoring plugin for DankMaterialShell. Tracks GPU usage, VRAM, temperature, power, and per-process activity for AMD GPUs, with support for multiple GPU-specific widget variants.
-
-![Screenshot](screenshots/screenshot.png)
+![Screenshot](docs/images/screenshot.png)
 
 ## Features
 
-- GPU usage monitoring (GFX, Memory, Media Engine) — overall usage is the max of the three engines
+- GPU usage monitoring (GPU, Memory Controller, Encoder/Decoder) via `nvidia-smi`
 - VRAM statistics with auto-scaling display (MiB or GiB)
-- Temperature and power tracking with fallback handling for GPUs that expose sensors differently
-- Per-process GPU metrics (VRAM, GFX, CPU, GTT, Compute) — filtered to active processes only
+- Temperature and power tracking
+- Per-process GPU metrics (process name, PID, VRAM) — includes both graphics and compute processes, parsed from `nvidia-smi -q -x`
 - Color-coded indicators (normal < 70% / warning 70–90% / critical > 90%)
 - Smooth animations on all bars and gauges
 - Three switchable popout visual styles:
@@ -27,47 +19,52 @@ Real-time AMD GPU monitoring plugin for DankMaterialShell. Tracks GPU usage, VRA
 - Configurable process list sorting (VRAM, GFX, CPU, Name, PID)
 - Hover tooltips show the full name when a process label is truncated
 - Multi-GPU widget variants — create separate widgets for GPU 0, GPU 1, and so on
-- Efficient shared polling — one `amdgpu_top` call per tick for all widgets and screens
+- Efficient shared polling — one `nvidia-smi` call per tick for all widgets and screens
 - Configurable via DankMaterialShell settings UI — no manual file editing required
 
 ## Quick Start
 
 ### Requirements
 
-- AMD GPU
-- [`amdgpu_top`](https://github.com/Umio-Yasuno/amdgpu_top)
+- NVIDIA GPU with the proprietary NVIDIA driver
+- [`nvidia-smi`](https://developer.nvidia.com/nvidia-system-management-interface) (ships with the NVIDIA driver)
 - QuickShell
 - DankMaterialShell
-- Linux kernel 5.14+ (for per-process stats)
 
-#### Install `amdgpu_top`
+#### Install `nvidia-smi`
+
+`nvidia-smi` is bundled with the NVIDIA driver. Install the driver for your distribution:
 
 ```bash
-# From source
-cargo install amdgpu_top
-
-# Nix profile
-nix profile add nixpkgs#amdgpu_top
-
 # Arch
-yay -S amdgpu_top
+yay -S nvidia
+
+# Debian/Ubuntu
+sudo apt install nvidia-driver
+
+# Fedora
+sudo dnf install akmod-nvidia
 ```
 
-**Or** release page: <https://github.com/Umio-Yasuno/amdgpu_top/releases>
+Verify it works:
+
+```bash
+nvidia-smi
+```
 
 ### Installation
 
-Install the plugin via the DankMaterialShell  <a href="dms://plugin/install/amdGpuMonitor">plugin store</a>, or manually:
+Install the plugin via the DankMaterialShell  <a href="dms://plugin/install/nvidiaGpuMonitor">plugin store</a>, or manually:
 
 ```bash
-git clone https://github.com/navidagz/dms-amd-gpu-monitor.git ~/.config/DankMaterialShell/plugins/amdGpuMonitor
+git clone https://github.com/navidagz/dms-nvidia-gpu-monitor.git ~/.config/DankMaterialShell/plugins/nvidiaGpuMonitor
 ```
 
 Then:
 
 1. Open DMS Settings -> Plugins
 2. Scan for plugins if needed
-3. Enable `AMD GPU Monitor`
+3. Enable `NVIDIA GPU Monitor`
 4. Add the widget to your bar from DMS Settings -> Bar / Widgets
 
 ## Bar Display
@@ -82,7 +79,7 @@ Then:
 
 ## Usage
 
-**Popout Panel:** Click the widget to open detailed metrics for the selected GPU: device name, engine activity, VRAM, temperature, power, and a sortable process list.
+**Popout Panel:** Click the widget to open detailed metrics for the selected GPU: device name, engine activity, VRAM, temperature, power, and a process list.
 
 ### Popout Styles
 
@@ -98,9 +95,9 @@ You can switch styles at runtime from the DMS plugin settings UI.
 
 ### Multi-GPU Variants
 
-<img src="screenshots/settings.png" align="right" width="400">
+<img src="docs/images/settings.png" align="right" width="400">
 
-GPUs are auto-detected via PCI address — no manual index entry needed. Each detected GPU gets its own widget variant automatically. All widgets share a single `amdgpu_top` poll, so adding more GPUs or screens does not multiply CPU overhead.
+GPUs are auto-detected via PCI address — no manual index entry needed. Each detected GPU gets its own widget variant automatically. All widgets share a single `nvidia-smi` poll, so adding more GPUs or screens does not multiply CPU overhead.
 
 Use this when you want:
 
@@ -110,7 +107,7 @@ Use this when you want:
 
 To add a GPU widget to your bar:
 
-1. Open DMS Settings -> Plugins -> AMD GPU Monitor
+1. Open DMS Settings -> Plugins -> NVIDIA GPU Monitor
 2. Scroll to **Configured Widgets** — each detected GPU already has a variant
 3. Go to **Add Widget** and pick the variant you want
 
@@ -124,24 +121,24 @@ Legacy variants from older plugin versions appear with a `(legacy)` tag and can 
 
 Available in the DMS settings UI:
 
-|| Setting | Description |
-|---|---|---|
-|| `Force Padding` | Keeps the horizontal bar width stable as values change. |
-|| `Popout Style` | Switches between `Default`, `Alternative`, and `Legacy`. |
-|| `Update Interval` | Controls how often `amdgpu_top` is polled (1s–15s). Lower values are more responsive but use more CPU. The fastest interval requested by any active widget drives the shared poll timer. |
-|| `Process List Height` | Controls the maximum process list height in the popout. The widget clamps the effective value to its supported range. |
-|| `Process List Sort` | Sorts the popout process list by VRAM Usage, GPU Usage (GFX), CPU Usage, Process Name, or PID. |
-|| `GPU Variants` | Lists auto-detected GPUs and lets you edit widget display names and icons inline. |
+| Setting | Description |
+|---|---|
+| `Force Padding` | Keeps the horizontal bar width stable as values change. |
+| `Popout Style` | Switches between `Default`, `Alternative`, and `Legacy`. |
+| `Update Interval` | Controls how often `nvidia-smi` is polled (1s–15s). Lower values are more responsive but use more CPU. The fastest interval requested by any active widget drives the shared poll timer. |
+| `Process List Height` | Controls the maximum process list height in the popout. The widget clamps the effective value to its supported range. |
+| `Process List Sort` | Sorts the popout process list by VRAM Usage, GPU Usage (GFX), CPU Usage, Process Name, or PID. |
+| `GPU Variants` | Lists auto-detected GPUs and lets you edit widget display names and icons inline. |
 
 ## Notes
 
 - Each variant stores its GPU by PCI address, so the correct GPU is always targeted even after hardware changes.
-- Temperature data is read from `amdgpu_top` first, with fallback handling for GPUs that expose temperature via different sensor fields or sysfs.
-- When a sysfs fallback is needed, the plugin resolves the GPU path from device metadata and reads the first `hwmon/*/temp1_input` entry via a direct `find` invocation without shell interpolation.
+- The GPU engine activity section maps `utilization.gpu` to GFX, `utilization.memory` to MEM, and the max of `utilization.encoder`/`utilization.decoder` to Media.
+- The process list covers **all** processes using the GPU — graphics and compute alike (parsed from `nvidia-smi -q -x`), each with its VRAM usage. Per-process GPU utilization is not exposed by `nvidia-smi`. Values that `nvidia-smi` reports as `[N/A]` (e.g. power draw on some GPUs) are shown as disabled/hidden rather than garbage.
 
 ## Documentation
 
-[Full Documentation](https://navidagz.github.io/dms-amd-gpu-monitor/docs/)
+[Full Documentation](https://Reverssss.github.io/dms-nvidia-gpu-monitor/docs/)
 
 - [Installation Guide](docs/installation.md)
 - [Configuration](docs/configuration.md)
@@ -150,14 +147,10 @@ Available in the DMS settings UI:
 
 ## License
 
-MIT License — Copyright 2026 Navid A.
+MIT License — Copyright 2026 Revers.
 
 ## Credits
 
-Built for [DankMaterialShell](https://github.com/DankMaterialShell) • Uses [amdgpu_top](https://github.com/Umio-Yasuno/amdgpu_top)
+Built for [DankMaterialShell](https://github.com/DankMaterialShell) • Uses [nvidia-smi](https://developer.nvidia.com/nvidia-system-management-interface)
 
-Special thanks to [@skrimix](https://github.com/skrimix), [@Tz-slayer](https://github.com/Tz-slayer), and [@felipeadeildo](https://github.com/felipeadeildo) for contributions and feedback.
-
-<a href="https://github.com/navidagz/dms-amd-gpu-monitor/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=navidagz/dms-amd-gpu-monitor" />
-</a>
+Thanks to [@navidagz](https://github.com/navidagz) for the original project.
