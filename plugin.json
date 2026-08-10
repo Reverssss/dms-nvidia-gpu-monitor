@@ -1,6 +1,6 @@
 {
-  "id": "nvidiaGpuMonitor",
-  "name": "NVIDIA GPU Monitor",
+  "id": "nvidiaGpuDankbarMonitor",
+  "name": "NVIDIA GPU Dankbar Monitor",
   "description": "Monitor NVIDIA GPU usage, VRAM, temperature, power consumption and process usage.",
   "category": "monitoring",
   "version": "5.1.0",
