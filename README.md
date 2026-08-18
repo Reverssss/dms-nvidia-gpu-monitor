@@ -54,10 +54,10 @@ nvidia-smi
 
 ### Installation
 
-Install the plugin via the DankMaterialShell  <a href="dms://plugin/install/nvidiaGpuMonitor">plugin store</a>, or manually:
+Install the plugin via the DankMaterialShell  <a href="dms://plugin/install/nvidiaGpuDankbarMonitor">plugin store</a>, or manually:
 
 ```bash
-git clone https://github.com/navidagz/dms-nvidia-gpu-monitor.git ~/.config/DankMaterialShell/plugins/nvidiaGpuMonitor
+git clone https://github.com/Reverssss/dms-nvidia-gpu-monitor.git ~/.config/DankMaterialShell/plugins/nvidiaGpuDankbarMonitor
 ```
 
 Then:

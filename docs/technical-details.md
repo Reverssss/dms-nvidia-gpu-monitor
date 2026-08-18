@@ -128,7 +128,7 @@ The PCI bus id reported by `nvidia-smi` (`00000000:01:00.0`) is normalized to th
 
 | Key | Value |
 |---|---|
-| `id` | `nvidiaGpuMonitor` |
+| `id` | `nvidiaGpuDankbarMonitor` |
 | `version` | `5.1.0` |
 | `capabilities` | `dankbar-widget`, `monitoring` |
 | `permissions` | `settings_read`, `settings_write`, `process` |
