@@ -25,4 +25,15 @@ QtObject {
         if (temperature > temperatureWarningThreshold) return Theme.warning;
         return Theme.info;
     }
+
+    // nvidia-smi -q -x reports the full command line as process_name.
+    // Reduce it to the plain executable basename for display.
+    function processDisplayName(raw) {
+        const s = (raw || "").trim();
+        if (!s)
+            return "Unknown";
+        const firstToken = s.split(/\s+/)[0] || s;
+        const unquoted = firstToken.replace(/^["']|["']$/g, "");
+        return unquoted.split("/").pop() || unquoted;
+    }
 }

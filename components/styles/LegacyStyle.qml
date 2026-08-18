@@ -179,7 +179,7 @@ Column {
                 color: Theme.surfaceContainer
                 radius: Theme.cornerRadius
 
-                ToolTip.text: modelData.name
+                ToolTip.text: commonStyles.processDisplayName(modelData.name)
                 ToolTip.visible: procMouseArea.containsMouse && nameLabel.implicitWidth > nameLabel.width
                 ToolTip.delay: 400
 
@@ -200,7 +200,7 @@ Column {
                         spacing: Theme.spacingS
 
                         DankIcon {
-                            name: DgopService.getProcessIcon(modelData.name || "")
+                            name: DgopService.getProcessIcon(commonStyles.processDisplayName(modelData.name))
                             size: Theme.iconSize - 4
                             color: Theme.surfaceText
                             opacity: 0.8
@@ -215,7 +215,7 @@ Column {
                             StyledText {
                                 id: nameLabel
                                 width: parent.width
-                                text: modelData.name
+                                text: commonStyles.processDisplayName(modelData.name)
                                 color: Theme.surfaceText
                                 font.pixelSize: Theme.fontSizeSmall
                                 font.bold: true
