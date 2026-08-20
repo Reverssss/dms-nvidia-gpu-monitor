@@ -66,6 +66,23 @@ Singleton {
         return "";
     }
 
+    // `nvidia-smi -q -x` reports the full command line as process_name.
+    // Reduce it to the plain executable basename for display.
+    function normalizeProcessName(processName) {
+        const s = (processName || "").trim();
+        if (!s || s === "[Not Found]")
+            return "";
+
+        // /\s+/ matches one or more whitespace characters, so [0] gives us
+        // the leading command token before any arguments.
+        const firstToken = s.split(/\s+/)[0] || s;
+
+        // /^['"]|['"]$/g removes one leading or trailing quote character from
+        // the token, covering command lines like '"/nix/store/.../app" --arg'.
+        const unquoted = firstToken.replace(/^["']|["']$/g, "");
+        return unquoted.split("/").pop() || unquoted;
+    }
+
     Timer {
         id: updateTimer
         interval: root.defaultInterval
@@ -201,8 +218,9 @@ Singleton {
                         if (isNaN(pid))
                             continue;
 
-                        const name = (entry.match(/<process_name>([^<]*)<\/process_name>/)?.[1] ?? "").trim();
-                        if (!name || name === "[Not Found]")
+                        const rawName = (entry.match(/<process_name>([^<]*)<\/process_name>/)?.[1] ?? "").trim();
+                        const name = root.normalizeProcessName(rawName);
+                        if (!name)
                             continue;
 
                         const memText = entry.match(/<used_memory>([^<]*)<\/used_memory>/)?.[1] ?? "";
@@ -210,6 +228,7 @@ Singleton {
 
                         processList.push({
                             name: name,
+                            rawName: rawName,
                             pid: pid,
                             vram: vram,
                             vramUnit: "MiB",

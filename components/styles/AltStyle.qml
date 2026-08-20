@@ -230,7 +230,7 @@ Column {
                 radius: 8
                 color: Theme.surfaceContainerHigh
 
-                ToolTip.text: modelData.name
+                ToolTip.text: modelData.rawName || modelData.name
                 ToolTip.visible: procMouseArea.containsMouse && nameLabel.implicitWidth > nameLabel.width
                 ToolTip.delay: 400
 
