@@ -3,9 +3,9 @@ import QtQuick
 import qs.Common
 
 QtObject {
-    readonly property int largePanelRadius: 16
-    readonly property int mediumPanelRadius: 12
-    readonly property int smallBadgeRadius: 12
+    readonly property real largePanelRadius: Theme.cornerRadius
+    readonly property real mediumPanelRadius: Theme.cornerRadius
+    readonly property real smallBadgeRadius: Theme.cornerRadius
     readonly property int chipHeight: 48
     readonly property int badgeHeight: 24
 

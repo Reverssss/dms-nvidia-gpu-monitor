@@ -7,7 +7,7 @@ Rectangle {
     id: statCardRoot
     width: 100
     height: 100
-    radius: 16
+    radius: Theme.cornerRadius
     color: Theme.surfaceContainerHigh
 
     property string iconName: ""
@@ -44,20 +44,20 @@ Rectangle {
         StyledText {
             text: statCardRoot.valueText
             color: Theme.surfaceText
-            font.pixelSize: 28
+            font.pixelSize: Theme.fontSizeLarge
             font.weight: Font.Bold
         }
 
         Rectangle {
             width: parent.width
             height: 4
-            radius: 2
+            radius: Theme.cornerRadius
             color: Theme.surfaceContainerHighest
 
             Rectangle {
                 width: parent.width * (statCardRoot.progressValue / 100)
                 height: parent.height
-                radius: 2
+                radius: Theme.cornerRadius
                 color: statCardRoot.progressColor
 
                 Behavior on width {

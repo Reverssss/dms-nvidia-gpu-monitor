@@ -92,7 +92,7 @@ Singleton {
         onExited: exitCode => {
             if (exitCode !== 0) {
                 root.statsError = true;
-                console.warn(`nvidiaGpuMonitor: nvidia-smi exited with code ${exitCode}`);
+                console.warn(`nvidiaGpuDankbarMonitor: nvidia-smi exited with code ${exitCode}`);
             }
         }
 
@@ -101,7 +101,7 @@ Singleton {
                 const errorText = text.trim();
                 if (errorText.length > 0) {
                     root.statsError = true;
-                    console.warn(`nvidiaGpuMonitor: ${errorText}`);
+                    console.warn(`nvidiaGpuDankbarMonitor: ${errorText}`);
                 }
             }
         }
@@ -174,7 +174,7 @@ Singleton {
 
         onExited: exitCode => {
             if (exitCode !== 0)
-                console.warn(`nvidiaGpuMonitor: nvidia-smi -q -x exited with code ${exitCode}`);
+                console.warn(`nvidiaGpuDankbarMonitor: nvidia-smi -q -x exited with code ${exitCode}`);
         }
 
         stdout: StdioCollector {

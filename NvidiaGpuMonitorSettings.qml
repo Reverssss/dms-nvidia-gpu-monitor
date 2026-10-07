@@ -6,7 +6,7 @@ import qs.Widgets
 
 PluginSettings {
     id: root
-    pluginId: "nvidiaGpuMonitor"
+    pluginId: "nvidiaGpuDankbarMonitor"
 
     // [{ name, pci, type, suspended }] as reported by nvidia-smi
     property var detectedGpus: []

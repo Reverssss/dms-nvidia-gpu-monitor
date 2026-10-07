@@ -2,7 +2,6 @@ import QtQuick
 import QtQuick.Controls
 
 import qs.Common
-import qs.Services
 import qs.Widgets
 
 import "../shared" as Shared
@@ -229,7 +228,7 @@ Column {
                             spacing: Theme.spacingS
 
                             DankIcon {
-                                name: DgopService.getProcessIcon(modelData.name || "")
+                                name: "apps"
                                 size: Theme.iconSize - 4
                                 color: Theme.surfaceText
                                 opacity: 0.8

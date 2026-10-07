@@ -26,14 +26,14 @@ Item {
         Rectangle {
             width: parent.width - 100
             height: 8
-            radius: 4
+            radius: Theme.cornerRadius
             color: Theme.surfaceContainerHighest
             anchors.verticalCenter: parent.verticalCenter
 
             Rectangle {
                 width: parent.width * (engineBarRoot.value / 100)
                 height: parent.height
-                radius: 4
+                radius: Theme.cornerRadius
                 color: engineBarRoot.barColor
 
                 Behavior on width {

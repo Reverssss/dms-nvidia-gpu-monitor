@@ -98,7 +98,7 @@ All popout styles (Default, Alternative, Legacy) read the same thresholds, so ch
 | `components/shared/EngineBar.qml` | Label + animated horizontal bar + percentage; used for GFX/Memory/Media rows |
 | `components/shared/ProgressBar.qml` | Generic animated fill bar; configurable height, radius, colors |
 | `components/shared/StatCard.qml` | Rounded card with icon, label, large bold value, and a thin progress bar |
-| `components/shared/CommonStyles.qml` | Shared layout constants (`largePanelRadius: 16`, `mediumPanelRadius: 12`, `chipHeight: 48`, etc.) plus the shared usage/temperature color thresholds and `usageColor()`/`temperatureColor()` helpers |
+| `components/shared/CommonStyles.qml` | Shared layout constants (`largePanelRadius`, `mediumPanelRadius`, `chipHeight: 48`, etc., all derived from `Theme.cornerRadius`) plus the shared usage/temperature color thresholds and `usageColor()`/`temperatureColor()` helpers |
 
 ## Animations
 
@@ -128,7 +128,7 @@ The PCI bus id reported by `nvidia-smi` (`00000000:01:00.0`) is normalized to th
 
 | Key | Value |
 |---|---|
-| `id` | `nvidiaGpuMonitor` |
+| `id` | `nvidiaGpuDankbarMonitor` |
 | `version` | `5.1.0` |
 | `capabilities` | `dankbar-widget`, `monitoring` |
 | `permissions` | `settings_read`, `settings_write`, `process` |
